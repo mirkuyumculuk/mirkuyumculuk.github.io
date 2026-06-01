@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ShoppingCart, ArrowLeft, Heart, Phone, Mail } from 'lucide-react';
@@ -19,11 +19,7 @@ const ProductDetailPage = () => {
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-  useEffect(() => {
-    fetchProduct();
-  }, [id]);
-
-  const fetchProduct = async () => {
+  const fetchProduct = useCallback(async () => {
     setLoading(true);
     try {
       const { data } = await axios.get(`${API_URL}/api/products/${id}`);
@@ -35,7 +31,11 @@ const ProductDetailPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL, id, navigate]);
+
+  useEffect(() => {
+    fetchProduct();
+  }, [fetchProduct]);
 
   const handleAddToCart = async () => {
     if (!user || !user.id) {

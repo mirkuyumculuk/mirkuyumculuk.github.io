@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { CheckCircle, Loader } from 'lucide-react';
@@ -11,25 +11,16 @@ const CheckoutSuccessPage = () => {
   const { clearCart } = useCart();
   const [status, setStatus] = useState('checking');
   const [transaction, setTransaction] = useState(null);
-  const [attempts, setAttempts] = useState(0);
+  const attemptsRef = useRef(0);
   const API_URL = process.env.REACT_APP_BACKEND_URL;
 
   const sessionId = searchParams.get('session_id');
 
-  useEffect(() => {
-    if (!sessionId) {
-      navigate('/');
-      return;
-    }
-
-    pollPaymentStatus();
-  }, [sessionId]);
-
-  const pollPaymentStatus = async () => {
+  const pollPaymentStatus = useCallback(async () => {
     const maxAttempts = 5;
     const pollInterval = 2000;
 
-    if (attempts >= maxAttempts) {
+    if (attemptsRef.current >= maxAttempts) {
       setStatus('timeout');
       return;
     }
@@ -51,13 +42,21 @@ const CheckoutSuccessPage = () => {
         return;
       }
 
-      setAttempts(attempts + 1);
+      attemptsRef.current += 1;
       setTimeout(pollPaymentStatus, pollInterval);
     } catch (error) {
       console.error('Payment status check error:', error);
       setStatus('error');
     }
-  };
+  }, [API_URL, sessionId, clearCart]);
+
+  useEffect(() => {
+    if (!sessionId) {
+      navigate('/');
+      return;
+    }
+    pollPaymentStatus();
+  }, [sessionId, navigate, pollPaymentStatus]);
 
   return (
     <div className="min-h-screen pt-20 pb-16 flex items-center justify-center" data-testid="checkout-success-page">

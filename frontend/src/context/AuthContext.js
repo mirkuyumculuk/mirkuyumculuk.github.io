@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext();
@@ -26,11 +26,7 @@ export const AuthProvider = ({ children }) => {
 
   const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     try {
       const { data } = await axios.get(`${API_URL}/api/auth/me`, {
         withCredentials: true
@@ -41,9 +37,13 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL]);
 
-  const login = async (email, password) => {
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  const login = useCallback(async (email, password) => {
     try {
       const { data } = await axios.post(
         `${API_URL}/api/auth/login`,
@@ -56,9 +56,9 @@ export const AuthProvider = ({ children }) => {
       const message = formatApiErrorDetail(error.response?.data?.detail) || error.message;
       return { success: false, error: message };
     }
-  };
+  }, [API_URL]);
 
-  const register = async (name, email, password) => {
+  const register = useCallback(async (name, email, password) => {
     try {
       const { data } = await axios.post(
         `${API_URL}/api/auth/register`,
@@ -71,19 +71,24 @@ export const AuthProvider = ({ children }) => {
       const message = formatApiErrorDetail(error.response?.data?.detail) || error.message;
       return { success: false, error: message };
     }
-  };
+  }, [API_URL]);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       await axios.post(`${API_URL}/api/auth/logout`, {}, { withCredentials: true });
       setUser(false);
     } catch (error) {
       console.error('Logout error:', error);
     }
-  };
+  }, [API_URL]);
+
+  const contextValue = useMemo(
+    () => ({ user, loading, login, register, logout, checkAuth }),
+    [user, loading, login, register, logout, checkAuth]
+  );
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, checkAuth }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

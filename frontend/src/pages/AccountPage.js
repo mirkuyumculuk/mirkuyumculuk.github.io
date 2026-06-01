@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { Package, User } from 'lucide-react';
@@ -9,11 +9,7 @@ const AccountPage = () => {
   const [loading, setLoading] = useState(true);
   const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     setLoading(true);
     try {
       const { data } = await axios.get(`${API_URL}/api/orders`, {
@@ -25,7 +21,11 @@ const AccountPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
   const getStatusText = (status) => {
     const statusMap = {
@@ -120,7 +120,7 @@ const AccountPage = () => {
 
                     <div className="space-y-2 mb-4">
                       {order.items.map((item, index) => (
-                        <div key={index} className="flex justify-between text-sm">
+                        <div key={`${order.id}-${item.product_id}-${index}`} className="flex justify-between text-sm">
                           <span className="text-[#7A7A7A]">
                             {item.name} x {item.quantity}
                           </span>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { ChevronRight } from 'lucide-react';
@@ -8,18 +8,18 @@ const HomePage = () => {
   const [campaigns, setCampaigns] = useState([]);
   const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-  useEffect(() => {
-    fetchCampaigns();
-  }, []);
-
-  const fetchCampaigns = async () => {
+  const fetchCampaigns = useCallback(async () => {
     try {
       const { data } = await axios.get(`${API_URL}/api/campaigns`);
       setCampaigns(data);
     } catch (error) {
       console.error('Fetch campaigns error:', error);
     }
-  };
+  }, [API_URL]);
+
+  useEffect(() => {
+    fetchCampaigns();
+  }, [fetchCampaigns]);
 
   const categories = [
     {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { ShoppingCart, Heart, Search } from 'lucide-react';
@@ -34,18 +34,7 @@ const ProductsPage = () => {
     '22k': '22 Ayar Altın'
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, [category, sort]);
-
-  useEffect(() => {
-    const debounce = setTimeout(() => {
-      fetchProducts();
-    }, 300);
-    return () => clearTimeout(debounce);
-  }, [search]);
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -61,7 +50,14 @@ const ProductsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL, category, search, sort]);
+
+  useEffect(() => {
+    const debounce = setTimeout(() => {
+      fetchProducts();
+    }, 300);
+    return () => clearTimeout(debounce);
+  }, [fetchProducts]);
 
   const handleAddToCart = async (productId) => {
     if (!user || !user.id) {

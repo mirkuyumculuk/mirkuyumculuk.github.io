@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
 
@@ -19,16 +19,7 @@ export const CartProvider = ({ children }) => {
 
   const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-  useEffect(() => {
-    if (user && user.id) {
-      fetchCart();
-    } else {
-      setCart([]);
-      setCartCount(0);
-    }
-  }, [user]);
-
-  const fetchCart = async () => {
+  const fetchCart = useCallback(async () => {
     try {
       const { data } = await axios.get(`${API_URL}/api/cart`, {
         withCredentials: true
@@ -38,9 +29,18 @@ export const CartProvider = ({ children }) => {
     } catch (error) {
       console.error('Fetch cart error:', error);
     }
-  };
+  }, [API_URL]);
 
-  const addToCart = async (productId, quantity = 1) => {
+  useEffect(() => {
+    if (user && user.id) {
+      fetchCart();
+    } else {
+      setCart([]);
+      setCartCount(0);
+    }
+  }, [user, fetchCart]);
+
+  const addToCart = useCallback(async (productId, quantity = 1) => {
     try {
       await axios.post(
         `${API_URL}/api/cart/add`,
@@ -52,9 +52,9 @@ export const CartProvider = ({ children }) => {
     } catch (error) {
       return { success: false, error: error.response?.data?.detail || 'Ürün eklenemedi' };
     }
-  };
+  }, [API_URL, fetchCart]);
 
-  const removeFromCart = async (itemId) => {
+  const removeFromCart = useCallback(async (itemId) => {
     try {
       await axios.delete(`${API_URL}/api/cart/${itemId}`, {
         withCredentials: true
@@ -64,15 +64,20 @@ export const CartProvider = ({ children }) => {
     } catch (error) {
       return { success: false, error: error.response?.data?.detail || 'Ürün silinemedi' };
     }
-  };
+  }, [API_URL, fetchCart]);
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setCart([]);
     setCartCount(0);
-  };
+  }, []);
+
+  const contextValue = useMemo(
+    () => ({ cart, cartCount, addToCart, removeFromCart, fetchCart, clearCart }),
+    [cart, cartCount, addToCart, removeFromCart, fetchCart, clearCart]
+  );
 
   return (
-    <CartContext.Provider value={{ cart, cartCount, addToCart, removeFromCart, fetchCart, clearCart }}>
+    <CartContext.Provider value={contextValue}>
       {children}
     </CartContext.Provider>
   );
