@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Menu, X, User, LogOut, Package } from 'lucide-react';
+import { ShoppingCart, Menu, X, User, LogOut, Package, Heart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Button } from './ui/button';
 
 const Header = () => {
   const { user, logout } = useAuth();
   const { cartCount } = useCart();
+  const { wishlist } = useWishlist();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -80,6 +82,14 @@ const Header = () => {
                       >
                         <User className="h-5 w-5" /> Hesabım
                       </Link>
+                      <Link
+                        to="/wishlist"
+                        className="text-lg text-[#1A1A1A] hover:text-[#D4AF37] transition-colors flex items-center gap-2"
+                        onClick={() => setMobileMenuOpen(false)}
+                        data-testid="mobile-wishlist-link"
+                      >
+                        <Heart className="h-5 w-5" /> Favorilerim
+                      </Link>
                       <button
                         onClick={() => {
                           handleLogout();
@@ -106,10 +116,13 @@ const Header = () => {
             </Sheet>
           </div>
 
-          <Link to="/" className="flex-1 flex justify-center" data-testid="logo-link">
-            <h1 className="logo-font text-4xl md:text-5xl lg:text-6xl font-black gold-gradient drop-shadow-sm tracking-widest">
+          <Link to="/" className="flex-1 flex flex-col items-center justify-center" data-testid="logo-link">
+            <h1 className="logo-font text-4xl md:text-5xl lg:text-6xl font-black gold-gradient drop-shadow-sm tracking-widest leading-none">
               MIR
             </h1>
+            <span className="text-[10px] md:text-xs text-[#B38728] tracking-[0.3em] mt-1 font-medium" data-testid="est-year">
+              EST. 2026
+            </span>
           </Link>
 
           <div className="flex items-center gap-2 md:gap-4">
@@ -145,6 +158,14 @@ const Header = () => {
                           <Package className="h-5 w-5" />
                           <span className="text-lg">Sipariş Geçmişim</span>
                         </Link>
+                        <Link
+                          to="/wishlist"
+                          className="flex items-center gap-3 text-[#1A1A1A] hover:text-[#D4AF37] transition-colors"
+                          data-testid="desktop-wishlist-link"
+                        >
+                          <Heart className="h-5 w-5" />
+                          <span className="text-lg">Favorilerim</span>
+                        </Link>
                         <button
                           onClick={handleLogout}
                           className="flex items-center gap-3 text-[#1A1A1A] hover:text-[#D4AF37] transition-colors text-left"
@@ -176,6 +197,20 @@ const Header = () => {
                 </SheetContent>
               </Sheet>
             </nav>
+
+            <Link to="/wishlist" className="relative" data-testid="wishlist-icon-link">
+              <Button variant="ghost" size="icon" className="relative">
+                <Heart className="h-6 w-6 text-[#1A1A1A]" />
+                {wishlist.length > 0 && (
+                  <span
+                    className="absolute -top-1 -right-1 bg-[#D4AF37] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold"
+                    data-testid="wishlist-count-badge"
+                  >
+                    {wishlist.length}
+                  </span>
+                )}
+              </Button>
+            </Link>
 
             <Link to="/cart" className="relative" data-testid="cart-link">
               <Button variant="ghost" size="icon" className="relative">

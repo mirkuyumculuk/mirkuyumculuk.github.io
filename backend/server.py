@@ -210,11 +210,23 @@ async def get_me(current_user: dict = Depends(get_current_user)):
     return current_user
 
 @api_router.get("/products")
-async def get_products(category: Optional[str] = None):
+async def get_products(category: Optional[str] = None, search: Optional[str] = None, sort: Optional[str] = None):
     query = {}
     if category:
         query["category"] = category
-    products = await db.products.find(query, {"_id": 0}).to_list(1000)
+    if search:
+        query["name"] = {"$regex": search, "$options": "i"}
+    
+    cursor = db.products.find(query, {"_id": 0})
+    
+    if sort == "name_asc":
+        cursor = cursor.sort("name", 1)
+    elif sort == "name_desc":
+        cursor = cursor.sort("name", -1)
+    elif sort == "newest":
+        cursor = cursor.sort("created_at", -1)
+    
+    products = await cursor.to_list(1000)
     return products
 
 @api_router.get("/products/{product_id}")
@@ -412,6 +424,47 @@ async def get_campaigns():
     campaigns = await db.campaigns.find({"active": True}, {"_id": 0}).to_list(100)
     return campaigns
 
+@api_router.post("/wishlist/add")
+async def add_to_wishlist(item: CartItem, current_user: dict = Depends(get_current_user)):
+    product = await db.products.find_one({"id": item.product_id}, {"_id": 0})
+    if not product:
+        raise HTTPException(status_code=404, detail="Ürün bulunamadı")
+    
+    existing = await db.wishlist.find_one({"user_id": current_user["id"], "product_id": item.product_id})
+    if existing:
+        return {"message": "Ürün zaten favorilerde"}
+    
+    wishlist_item = {
+        "id": str(uuid.uuid4()),
+        "user_id": current_user["id"],
+        "product_id": item.product_id,
+        "added_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.wishlist.insert_one(wishlist_item)
+    return {"message": "Ürün favorilere eklendi"}
+
+@api_router.get("/wishlist")
+async def get_wishlist(current_user: dict = Depends(get_current_user)):
+    wishlist_items = await db.wishlist.find({"user_id": current_user["id"]}, {"_id": 0}).to_list(1000)
+    
+    result = []
+    for item in wishlist_items:
+        product = await db.products.find_one({"id": item["product_id"]}, {"_id": 0})
+        if product:
+            result.append({
+                "id": item["id"],
+                "product": product
+            })
+    
+    return result
+
+@api_router.delete("/wishlist/{product_id}")
+async def remove_from_wishlist(product_id: str, current_user: dict = Depends(get_current_user)):
+    result = await db.wishlist.delete_one({"product_id": product_id, "user_id": current_user["id"]})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Ürün favorilerde bulunamadı")
+    return {"message": "Ürün favorilerden silindi"}
+
 app.include_router(api_router)
 
 app.add_middleware(
@@ -436,6 +489,7 @@ async def startup_event():
     await db.cart.create_index("user_id")
     await db.orders.create_index("user_id")
     await db.payment_transactions.create_index("session_id")
+    await db.wishlist.create_index("user_id")
     
     admin_email = os.environ.get("ADMIN_EMAIL", "admin@mirgold.com")
     admin_password = os.environ.get("ADMIN_PASSWORD", "MirAdmin2024!")
@@ -490,7 +544,7 @@ async def startup_event():
     
     sample_campaigns = [
         {"id": "camp-1", "title": "Kış Kampanyası", "description": "Tüm ürünlerde %20 indirim", "image_url": "https://images.pexels.com/photos/29371787/pexels-photo-29371787.jpeg?w=600", "discount": "20%", "active": True},
-        {"id": "camp-2", "title": "Yeni Koleksiyon", "description": "2024 yeni sezon ürünleri", "image_url": "https://static.prod-images.emergentagent.com/jobs/ca0ba447-1b1a-4344-a291-0dbbc38054da/images/8d20ad915f460a681edb47606f5028fc4cb44cbb11042e03443761bcb07a61c0.png", "discount": "Yeni", "active": True},
+        {"id": "camp-2", "title": "Yeni Koleksiyon", "description": "2026 yeni sezon ürünleri", "image_url": "https://static.prod-images.emergentagent.com/jobs/ca0ba447-1b1a-4344-a291-0dbbc38054da/images/8d20ad915f460a681edb47606f5028fc4cb44cbb11042e03443761bcb07a61c0.png", "discount": "Yeni", "active": True},
         {"id": "camp-3", "title": "Özel Tasarım", "description": "El işçiliği özel tasarım ürünler", "image_url": "https://static.prod-images.emergentagent.com/jobs/ca0ba447-1b1a-4344-a291-0dbbc38054da/images/2a63b09776d4046efb1c66583a9937e241a6927222f0caf5e79dead9285ebc0b.png", "discount": "Özel", "active": True}
     ]
     

@@ -124,8 +124,8 @@ const AccountPage = () => {
                           <span className="text-[#7A7A7A]">
                             {item.name} x {item.quantity}
                           </span>
-                          <span className="text-[#1A1A1A] font-medium">
-                            {(item.price * item.quantity).toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺
+                          <span className="text-[#D4AF37] font-medium">
+                            İletişime Geçin
                           </span>
                         </div>
                       ))}
@@ -143,10 +143,13 @@ const AccountPage = () => {
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm text-[#7A7A7A]">Toplam</p>
-                        <p className="text-xl font-bold text-[#D4AF37]" data-testid={`order-total-${order.id}`}>
-                          {order.total_amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺
-                        </p>
+                        <a
+                          href="tel:5549365625"
+                          className="text-sm font-semibold text-[#D4AF37] hover:text-[#B38728]"
+                          data-testid={`order-contact-${order.id}`}
+                        >
+                          Detay için arayın
+                        </a>
                       </div>
                     </div>
                   </div>

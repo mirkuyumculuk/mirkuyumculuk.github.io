@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ShoppingCart, ArrowLeft } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Heart, Phone, Mail } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { toast } from 'sonner';
 
 const ProductDetailPage = () => {
@@ -15,6 +16,7 @@ const ProductDetailPage = () => {
   const [quantity, setQuantity] = useState(1);
   const { user } = useAuth();
   const { addToCart } = useCart();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const API_URL = process.env.REACT_APP_BACKEND_URL;
 
   useEffect(() => {
@@ -47,6 +49,20 @@ const ProductDetailPage = () => {
       toast.success('Ürün sepete eklendi');
     } else {
       toast.error(result.error);
+    }
+  };
+
+  const handleWishlistToggle = async () => {
+    if (!user || !user.id) {
+      toast.error('Favorilere eklemek için giriş yapın');
+      return;
+    }
+    if (isInWishlist(product.id)) {
+      const result = await removeFromWishlist(product.id);
+      if (result.success) toast.success('Favorilerden çıkarıldı');
+    } else {
+      const result = await addToWishlist(product.id);
+      if (result.success) toast.success('Favorilere eklendi');
     }
   };
 
@@ -92,9 +108,27 @@ const ProductDetailPage = () => {
             </p>
 
             <div className="mb-6">
-              <span className="text-4xl md:text-5xl font-bold text-[#D4AF37]" data-testid="product-price">
-                {product.price.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺
+              <span className="text-2xl md:text-3xl font-semibold text-[#D4AF37]" data-testid="product-price">
+                Fiyat için iletişime geçin
               </span>
+              <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                <a
+                  href="tel:5549365625"
+                  className="flex items-center gap-2 text-[#7A7A7A] hover:text-[#D4AF37] transition-colors"
+                  data-testid="product-phone-link"
+                >
+                  <Phone className="h-5 w-5" strokeWidth={1.5} />
+                  <span>0554 936 56 25</span>
+                </a>
+                <a
+                  href="mailto:info@mirgold.com"
+                  className="flex items-center gap-2 text-[#7A7A7A] hover:text-[#D4AF37] transition-colors"
+                  data-testid="product-email-link"
+                >
+                  <Mail className="h-5 w-5" strokeWidth={1.5} />
+                  <span>info@mirgold.com</span>
+                </a>
+              </div>
             </div>
 
             <div className="mb-6">
@@ -127,14 +161,27 @@ const ProductDetailPage = () => {
               </p>
             </div>
 
-            <Button
-              onClick={handleAddToCart}
-              className="btn-gold px-8 py-6 rounded-md text-lg font-semibold w-full md:w-auto"
-              data-testid="add-to-cart-button"
-            >
-              <ShoppingCart className="h-5 w-5 mr-2" />
-              Sepete Ekle
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button
+                onClick={handleAddToCart}
+                className="btn-gold px-8 py-6 rounded-md text-lg font-semibold flex-1"
+                data-testid="add-to-cart-button"
+              >
+                <ShoppingCart className="h-5 w-5 mr-2" />
+                Sepete Ekle
+              </Button>
+              <Button
+                onClick={handleWishlistToggle}
+                variant="outline"
+                className="px-6 py-6 rounded-md border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-white"
+                data-testid="wishlist-button"
+              >
+                <Heart
+                  className={`h-5 w-5 ${product && isInWishlist(product.id) ? 'fill-current' : ''}`}
+                  strokeWidth={1.5}
+                />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
