@@ -1,0 +1,108 @@
+{
+  "theme_and_archetype": {
+    "theme": "Light",
+    "archetype": "5 (Luxury)",
+    "description": "Premium, elegant, trustworthy e-commerce experience for high-end gold jewelry, using a pristine white base with sophisticated shiny gold accents."
+  },
+  "typography": {
+    "logo_font": "Bodoni Moda",
+    "heading_font": "Cormorant Garamond",
+    "body_font": "Manrope",
+    "logo_styling": "text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] text-transparent bg-clip-text drop-shadow-sm tracking-widest",
+    "heading_styling": "text-3xl md:text-5xl lg:text-6xl tracking-tight leading-none text-[#1A1A1A]",
+    "body_styling": "text-base md:text-lg text-[#4A4A4A] leading-relaxed"
+  },
+  "colors": {
+    "backgrounds": {
+      "primary": "#FFFFFF",
+      "secondary": "#FAFAFA",
+      "glass": "rgba(255, 255, 255, 0.7)"
+    },
+    "text": {
+      "primary": "#1A1A1A",
+      "secondary": "#7A7A7A",
+      "inverse": "#FFFFFF",
+      "gold": "#D4AF37"
+    },
+    "accents": {
+      "gold_primary": "#D4AF37",
+      "gold_hover": "#B38728",
+      "gold_gradient": "bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728]",
+      "border": "#E5E5E5"
+    }
+  },
+  "layout_and_spacing": {
+    "spacing_scale": "Generous: p-6, p-12, py-24",
+    "grid_strategy": "Tetris Grid for campaign section (asymmetric bento), Control Room dense grids for checkout/cart summary",
+    "container_max_width": "max-w-7xl mx-auto"
+  },
+  "surfaces_and_micro_themes": {
+    "header": "Crystal Glass variant: backdrop-blur-xl bg-white/70 with a delicate 1px border-b border-black/5. Must have z-50.",
+    "cards_and_campaigns": "Flat Solid variant: subtle bg-[#FAFAFA] with 1px border-[#E5E5E5]. Hover effects include slight lift (-translate-y-1) and shadow-xl.",
+    "checkboxes": "Professional: Custom Shadcn Checkbox with data-[state=checked]:bg-[#D4AF37] data-[state=checked]:border-[#D4AF37] data-[state=checked]:text-white. Use select-none cursor-pointer for labels.",
+    "footer": "High contrast minimal: solid #FAFAFA background, generous padding py-24."
+  },
+  "components_and_interactions": {
+    "navigation": "Top-mid 'MIR' logo. Right side: Menu button containing 'Hesabım' (My Account), 'Ödeme Yöntemleri' (Payment Methods), 'Sipariş Geçmişi' (Order History). Top right Shopping Cart. Mobile responsive sheet/drawer.",
+    "categories": "Prominent grid or carousel highlighting '8 Ayar', '14 Ayar', '21 Ayar', '22 Ayar' (Turkish for karats).",
+    "campaign_section": "Bento grid layout for seasonal offers ('Sezon İndirimleri'). Overlapping elements with high-quality imagery.",
+    "checkbox_labels": "Must be aligned optically, left-aligned, proper spacing (gap-3), muted secondary text for descriptions if needed.",
+    "buttons": "Primary: Solid gold background (bg-[#D4AF37]) or gold gradient with white text. Hover: Lighter gold. Fully rounded or crisp slight radius (rounded-md)."
+  },
+  "media_and_assets": {
+    "hero_banner": {
+      "url": "https://static.prod-images.emergentagent.com/jobs/ca0ba447-1b1a-4344-a291-0dbbc38054da/images/111458a6419fdd6f99dc2649f6a63c6bc4fd64b1c1a5b74fdc3728b203f3664e.png",
+      "description": "Cinematic wide hero banner of luxury gold jewelry resting on white silk."
+    },
+    "campaign_images": [
+      {
+        "url": "https://images.pexels.com/photos/29371787/pexels-photo-29371787.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Stylish woman wearing elegant gold jewelry, used for seasonal offers/campaigns."
+      },
+      {
+        "url": "https://static.prod-images.emergentagent.com/jobs/ca0ba447-1b1a-4344-a291-0dbbc38054da/images/8d20ad915f460a681edb47606f5028fc4cb44cbb11042e03443761bcb07a61c0.png",
+        "description": "Elegant composition of gold bracelets, used for campaign bento grids."
+      },
+      {
+         "url": "https://static.prod-images.emergentagent.com/jobs/ca0ba447-1b1a-4344-a291-0dbbc38054da/images/2a63b09776d4046efb1c66583a9937e241a6927222f0caf5e79dead9285ebc0b.png",
+         "description": "Minimalist glowing gold necklace."
+      }
+    ],
+    "category_images": [
+      {
+        "id": "8k",
+        "url": "https://images.unsplash.com/photo-1611107683227-e9060eccd846?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjBnb2xkJTIwamV3ZWxyeXxlbnwwfHx8fDE3ODAzMjQ2OTh8MA&ixlib=rb-4.1.0&q=85",
+        "title": "8 Ayar Altın",
+        "description": "8 Karat Gold category image"
+      },
+      {
+        "id": "14k",
+        "url": "https://images.pexels.com/photos/8105129/pexels-photo-8105129.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "title": "14 Ayar Altın",
+        "description": "14 Karat Gold category image"
+      },
+      {
+        "id": "21k",
+        "url": "https://images.unsplash.com/photo-1592317295760-5c1f677dfc78?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHwzfHxsdXh1cnklMjBnb2xkJTIwamV3ZWxyeXxlbnwwfHx8fDE3ODAzMjQ2OTh8MA&ixlib=rb-4.1.0&q=85",
+        "title": "21 Ayar Altın",
+        "description": "21 Karat Gold category image"
+      },
+      {
+        "id": "22k",
+        "url": "https://images.unsplash.com/photo-1617191880362-aac615de3c26?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHw0fHxsdXh1cnklMjBnb2xkJTIwamV3ZWxyeXxlbnwwfHx8fDE3ODAzMjQ2OTh8MA&ixlib=rb-4.1.0&q=85",
+        "title": "22 Ayar Altın",
+        "description": "22 Karat Gold category image"
+      }
+    ]
+  },
+  "specific_requirements": {
+    "language": "Turkish (TR)",
+    "footer_contact": {
+      "phone": "5549365625",
+      "email": "info@mirgold.com"
+    },
+    "data_testid_rules": "All interactive elements (buttons, links, inputs, checkboxes) MUST include a data-testid attribute in kebab-case (e.g., data-testid='add-to-cart-button').",
+    "icons": "Use lucide-react (default) with thin stroke-width (e.g., strokeWidth={1.5}) to match the luxury aesthetic.",
+    "authentication": "Required components for login/register, must match luxury aesthetic with gold accents and professional checkboxes for terms/conditions."
+  }
+}
